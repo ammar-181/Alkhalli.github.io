@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ridhwan Family</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #faf9f7;
+            --color-text: #1a1a1a;
+            --color-muted: #666;
+            --color-accent: #c9a87c;
+            --color-surface: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 12px;
+            height: 12px;
+            background: var(--color-text);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.15s ease;
+        }
+
+        .cursor-follower {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(26, 26, 26, 0.3);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+        }
+
+        .cursor.hover {
+            transform: scale(2.5);
+            background: transparent;
+            border: 1px solid var(--color-accent);
+        }
+
+        .cursor-follower.hover {
+            width: 60px;
+            height: 60px;
+            border-color: var(--color-accent);
+        }
+
+        /* Grain Overlay */
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9990;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Smooth scroll container */
+        .smooth-scroll {
+            will-change: transform;
+        }
+
+        /* Hero */
+        .hero-section {
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #f5f0e8 0%, #e8e0d5 100%);
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 7rem);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            overflow: hidden;
+        }
+
+        .hero-title .line {
+            display: block;
+            overflow: hidden;
+        }
+
+        .hero-title .line-inner {
+            display: block;
+            transform: translateY(100%);
+        }
+
+        .hero-subtitle {
+            font-size: clamp(0.875rem, 1.5vw, 1.125rem);
+            color: var(--color-muted);
+            margin-top: 2rem;
+            opacity: 0;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        /* Magnetic button */
+        .magnetic-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 3rem;
+            padding: 1rem 2.5rem;
+            border: 1px solid var(--color-text);
+            border-radius: 100px;
+            font-size: 0.875rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .magnetic-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--color-text);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+        }
+
+        .magnetic-btn:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .magnetic-btn:hover {
+            color: var(--color-bg);
+        }
+
+        /* Floating shapes */
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.4;
+            filter: blur(60px);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape-1 {
+            width: 400px;
+            height: 400px;
+            background: #d4c4b0;
+            top: -10%;
+            left: -5%;
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 300px;
+            height: 300px;
+            background: #c9b8a0;
+            bottom: -10%;
+            right: -5%;
+            animation-delay: -5s;
+        }
+
+        .shape-3 {
+            width: 250px;
+            height: 250px;
+            background: #e0d5c8;
+            top: 40%;
+            right: 20%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            mix-blend-mode: difference;
+            color: white;
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-link {
+            font-size: 0.8125rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            position: relative;
+            padding-bottom: 0.25rem;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: currentColor;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Sections */
+        section {
+            position: relative;
+        }
+
+        .section-padding {
+            padding: 8rem 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .section-padding {
+                padding: 10rem 3rem;
+            }
+        }
+
+        /* About Section */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: center;
+        }
+
+        @media (min-width: 768px) {
+            .about-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .about-image {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 3/4;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .about-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .about-image::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.2), transparent);
+        }
+
+        .about-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--color-accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .about-title {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            line-height: 1.2;
+            margin-bottom: 2rem;
+        }
+
+        .about-text {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--color-muted);
+            margin-bottom: 2rem;
+        }
+
+        /* Services */
+        .services-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .service-item {
+            border-top: 1px solid rgba(0,0,0,0.1);
+            padding: 3rem 0;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            cursor: pointer;
+            transition: padding 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .service-item {
+                grid-template-columns: 1fr 2fr 1fr;
+                align-items: center;
+            }
+        }
+
+        .service-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            height: 1px;
+            background: var(--color-accent);
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .service-item:hover::before {
+            width: 100%;
+        }
+
+        .service-item:hover {
+            padding-left: 1rem;
+        }
+
+        .service-number {
+            font-size: 0.875rem;
+            color: var(--color-muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .service-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            transition: transform 0.4s ease;
+        }
+
+        .service-item:hover .service-title {
+            transform: translateX(10px);
+        }
+
+        .service-desc {
+            color: var(--color-muted);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+
+        /* Portfolio */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .portfolio-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .portfolio-item {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+        }
+
+        .portfolio-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .portfolio-item:hover img {
+            transform: scale(1.08);
+        }
+
+        .portfolio-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .portfolio-item:hover .portfolio-overlay {
+            opacity: 1;
+        }
+
+        .portfolio-category {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 0.5rem;
+        }
+
+        .portfolio-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            color: white;
+        }
+
+        /* Testimonials */
+        .testimonials-container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .testimonial-quote {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            line-height: 1.4;
+            font-style: italic;
+            margin-bottom: 3rem;
+        }
+
+        .testimonial-author {
+            font-size: 0.875rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-muted);
+        }
+
+        /* Contact */
+        .contact-section {
+            background: var(--color-text);
+            color: var(--color-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .contact-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            line-height: 1.1;
+            margin-bottom: 2rem;
+        }
+
+        .contact-info {
+            margin-top: 3rem;
+        }
+
+        .contact-info-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-info-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-info-value {
+            font-size: 1.125rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding: 1rem 0;
+            color: var(--color-bg);
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--color-accent);
+        }
+
+        .form-label {
+            position: absolute;
+            left: 0;
+            top: 1rem;
+            color: rgba(255,255,255,0.5);
+            font-size: 1rem;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus + .form-label,
+        .form-input:not(:placeholder-shown) + .form-label {
+            top: -0.5rem;
+            font-size: 0.75rem;
+            color: var(--color-accent);
+        }
+
+        .submit-btn {
+            align-self: flex-start;
+            padding: 1rem 3rem;
+            background: var(--color-bg);
+            color: var(--color-text);
+            border: none;
+            border-radius: 100px;
+            font-size: 0.875rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem;
+            text-align: center;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .footer-text {
+            font-size: 0.875rem;
+            color: var(--color-muted);
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+        }
+
+        .scroll-indicator span {
+            font-size: 0.6875rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--color-muted);
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--color-text), transparent);
+            animation: scrollPulse 2s infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { transform: scaleY(1); opacity: 1; }
+            50% { transform: scaleY(0.5); opacity: 0.5; }
+        }
+
+        /* Parallax images */
+        .parallax-img {
+            will-change: transform;
+        }
+
+        /* Mobile cursor hide */
+        @media (pointer: coarse) {
+            .cursor, .cursor-follower {
+                display: none;
+            }
+            body {
+                cursor: auto;
+            }
+        }
+
+        /* Reveal animation classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Grain Overlay -->
+    <div class="grain"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-logo">Riyadh</div>
+        <div class="nav-links hidden md:flex">
+            <a href="#about" class="nav-link">About</a>
+            <a href="#services" class="nav-link">Services</a>
+            <a href="#work" class="nav-link">Work</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-bg"></div>
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+        
+        <div class="hero-content">
+            <h1 class="hero-title font-serif">
+                <span class="line"><span class="line-inner">Crafting Digital</span></span>
+                <span class="line"><span class="line-inner">Experiences That</span></span>
+                <span class="line"><span class="line-inner">Inspire</span></span>
+            </h1>
+            <p class="hero-subtitle">Creative Studio & Design Agency</p>
+            <a href="#work" class="magnetic-btn">
+                View Our Work
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M3 8h10M9 4l4 4-4 4"/>
+                </svg>
+            </a>
+        </div>
+
+        <div class="scroll-indicator">
+            <span>Scroll</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section-padding">
+        <div class="about-grid">
+            <div class="about-image reveal">
+                <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?w=800&auto=format&fit=crop&q=80" alt="Studio interior">
+            </div>
+            <div class="reveal">
+                <div class="about-label">About Us</div>
+                <h2 class="about-title font-serif">Where Vision Meets Precision</h2>
+                <p class="about-text">
+                    We are a collective of designers, strategists, and creators who believe in the power of thoughtful design. Every pixel is intentional, every interaction meaningful. We craft digital experiences that resonate with audiences and stand the test of time.
+                </p>
+                <p class="about-text">
+                    Founded in 2018, our studio has partnered with forward-thinking brands across the globe, translating complex ideas into elegant, human-centered solutions.
+                </p>
+                <a href="#contact" class="magnetic-btn" style="opacity: 1; transform: none; margin-top: 1rem;">
+                    Start a Project
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="section-padding" style="background: white;">
+        <div class="services-container">
+            <div class="reveal" style="text-align: center; margin-bottom: 4rem;">
+                <div class="about-label">What We Do</div>
+                <h2 class="about-title font-serif">Our Expertise</h2>
+            </div>
+            
+            <div class="service-item reveal">
+                <div class="service-number">01</div>
+                <h3 class="service-title">Brand Identity</h3>
+                <p class="service-desc">Strategic visual systems that capture essence and differentiate in crowded markets.</p>
+            </div>
+            
+            <div class="service-item reveal">
+                <div class="service-number">02</div>
+                <h3 class="service-title">Web Design</h3>
+                <p class="service-desc">Immersive digital experiences with meticulous attention to typography and motion.</p>
+            </div>
+            
+            <div class="service-item reveal">
+                <div class="service-number">03</div>
+                <h3 class="service-title">Development</h3>
+                <p class="service-desc">Clean, performant code that brings designs to life with seamless interactions.</p>
+            </div>
+            
+            <div class="service-item reveal">
+                <div class="service-number">04</div>
+                <h3 class="service-title">Art Direction</h3>
+                <p class="service-desc">Cohesive visual narratives that elevate campaigns and editorial content.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="work" class="section-padding">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <div class="reveal" style="text-align: center; margin-bottom: 4rem;">
+                <div class="about-label">Selected Work</div>
+                <h2 class="about-title font-serif">Recent Projects</h2>
+            </div>
+            
+            <div class="portfolio-grid">
+                <div class="portfolio-item reveal">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80" alt="Project 1" class="parallax-img">
+                    <div class="portfolio-overlay">
+                        <div class="portfolio-category">Brand Identity</div>
+                        <div class="portfolio-title">Meridian Collection</div>
+                    </div>
+                </div>
+                
+                <div class="portfolio-item reveal">
+                    <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&auto=format&fit=crop&q=80" alt="Project 2" class="parallax-img">
+                    <div class="portfolio-overlay">
+                        <div class="portfolio-category">Web Design</div>
+                        <div class="portfolio-title">Atelier Studio</div>
+                    </div>
+                </div>
+                
+                <div class="portfolio-item reveal">
+                    <img src="https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&auto=format&fit=crop&q=80" alt="Project 3" class="parallax-img">
+                    <div class="portfolio-overlay">
+                        <div class="portfolio-category">Development</div>
+                        <div class="portfolio-title">Nova Platform</div>
+                    </div>
+                </div>
+                
+                <div class="portfolio-item reveal">
+                    <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80" alt="Project 4" class="parallax-img">
+                    <div class="portfolio-overlay">
+                        <div class="portfolio-category">Art Direction</div>
+                        <div class="portfolio-title">Echo Magazine</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section-padding" style="background: white;">
+        <div class="testimonials-container reveal">
+            <div class="about-label" style="margin-bottom: 2rem;">Testimonials</div>
+            <p class="testimonial-quote font-serif">"Vesim transformed our digital presence with an elegance we didn't know was possible. Their attention to detail and creative vision exceeded every expectation."</p>
+            <div class="testimonial-author">— Sarah Chen, Founder of Meridian</div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section section-padding">
+        <div class="contact-grid">
+            <div class="reveal">
+                <div style="font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 1.5rem;">Get in Touch</div>
+                <h2 class="contact-title font-serif">Let's Create Something Beautiful</h2>
+                <p style="color: rgba(255,255,255,0.7); line-height: 1.8; font-size: 1.125rem;">
+                    Have a project in mind? We'd love to hear about it. Drop us a line and let's start a conversation.
+                </p>
+                
+                <div class="contact-info">
+                    <div class="contact-info-item">
+                        <div class="contact-info-label">Email</div>
+                        <div class="contact-info-value">hello@aura.studio</div>
+                    </div>
+                    <div class="contact-info-item">
+                        <div class="contact-info-label">Location</div>
+                        <div class="contact-info-value">New York, NY</div>
+                    </div>
+                    <div class="contact-info-item">
+                        <div class="contact-info-label">Phone</div>
+                        <div class="contact-info-value">+1 (555) 123-4567</div>
+                    </div>
+                </div>
+            </div>
+            
+            <form class="contact-form reveal" onsubmit="event.preventDefault(); alert('Thank you for your message! We will get back to you soon.');">
+                <div class="form-group">
+                    <input type="text" class="form-input" placeholder=" " required>
+                    <label class="form-label">Your Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-input" placeholder=" " required>
+                    <label class="form-label">Email Address</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-input" placeholder=" ">
+                    <label class="form-label">Project Type</label>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-input" rows="4" placeholder=" " style="resize: none;" required></textarea>
+                    <label class="form-label">Tell us about your project</label>
+                </div>
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p class="footer-text">© 2026 Aura Studio. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Register GSAP plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        const follower = document.querySelector('.cursor-follower');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+        let followerX = 0, followerY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            cursorX += (mouseX - cursorX) * 0.2;
+            cursorY += (mouseY - cursorY) * 0.2;
+            followerX += (mouseX - followerX) * 0.1;
+            followerY += (mouseY - followerY) * 0.1;
+
+            cursor.style.transform = `translate(${cursorX - 6}px, ${cursorY - 6}px)`;
+            follower.style.transform = `translate(${followerX - 20}px, ${followerY - 20}px)`;
+
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Cursor hover effects
+        const hoverElements = document.querySelectorAll('a, button, .portfolio-item, .service-item');
+        hoverElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.classList.add('hover');
+                follower.classList.add('hover');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hover');
+                follower.classList.remove('hover');
+            });
+        });
+
+        // Hero animations
+        window.addEventListener('load', () => {
+            const tl = gsap.timeline();
+            
+            tl.to('.hero-title .line-inner', {
+                y: 0,
+                duration: 1.2,
+                stagger: 0.1,
+                ease: 'power4.out'
+            })
+            .to('.hero-subtitle', {
+                opacity: 1,
+                duration: 1,
+                ease: 'power2.out'
+            }, '-=0.6')
+            .to('.magnetic-btn', {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: 'power3.out'
+            }, '-=0.6')
+            .to('.scroll-indicator', {
+                opacity: 1,
+                duration: 0.8
+            }, '-=0.4');
+        });
+
+        // Scroll reveal
+        const revealElements = document.querySelectorAll('.reveal');
+        revealElements.forEach((el, i) => {
+            gsap.fromTo(el, 
+                { opacity: 0, y: 40 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 1,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: el,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    }
+                }
+            );
+        });
+
+        // Parallax images
+        const parallaxImages = document.querySelectorAll('.parallax-img');
+        parallaxImages.forEach(img => {
+            gsap.to(img, {
+                yPercent: -15,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: img.parentElement,
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    scrub: true
+                }
+            });
+        });
+
+        // Magnetic button effect
+        const magneticBtns = document.querySelectorAll('.magnetic-btn');
+        magneticBtns.forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                
+                gsap.to(btn, {
+                    x: x * 0.3,
+                    y: y * 0.3,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+            });
+            
+            btn.addEventListener('mouseleave', () => {
+                gsap.to(btn, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.5,
+                    ease: 'elastic.out(1, 0.5)'
+                });
+            });
+        });
+
+        // Service items stagger
+        gsap.from('.service-item', {
+            opacity: 0,
+            x: -30,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: '#services',
+                start: 'top 70%'
+            }
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    gsap.to(window, {
+                        duration: 1.2,
+                        scrollTo: { y: target, offsetY: 0 },
+                        ease: 'power3.inOut'
+                    });
+                }
+            });
+        });
+
+        // Nav background on scroll
+        const nav = document.querySelector('.nav');
+        let lastScroll = 0;
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 100) {
+                nav.style.background = 'rgba(250, 249, 247, 0.9)';
+                nav.style.backdropFilter = 'blur(10px)';
+                nav.style.color = 'var(--color-text)';
+                nav.style.mixBlendMode = 'normal';
+            } else {
+                nav.style.background = 'transparent';
+                nav.style.backdropFilter = 'none';
+                nav.style.color = 'white';
+                nav.style.mixBlendMode = 'difference';
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // GSAP ScrollTo plugin fallback
+        gsap.registerPlugin({
+            name: "scrollTo",
+            init(target, value) {
+                this.target = target;
+                this.y = typeof value === 'object' ? value.y : value;
+            },
+            render(ratio) {
+                const targetY = typeof this.y === 'string' ? document.querySelector(this.y).offsetTop : this.y;
+                window.scrollTo(0, targetY * ratio);
+            }
+        });
+    </script>
+</body>
+</html>
